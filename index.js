@@ -69,7 +69,6 @@ function buffer(feature, radius, units, resolution) {
         geometry.coordinates.forEach(function (poly) {
             var line = polygonToLineString(polygon(poly)).features[0];
             line.properties = properties;
-            console.log(buffer(line, radius, units, resolution).features[0], feature);
             multi_polys.push(union(buffer(line, radius, units, resolution).features[0], feature));
         });
         return featureCollection(multi_polys);
@@ -127,9 +126,8 @@ function lineBuffer(line, radius, units, resolution, properties) {
             var spoke = destination(top, radius, spokeDirection, units);
             coords.push(spoke.geometry.coordinates);
         }
-        // add right edge
-        //coords.push(topRight.geometry.coordinates);
-        //coords.push(bottomRight.geometry.coordinates);
+        coords.push(topRight.geometry.coordinates);
+        coords.push(bottomRight.geometry.coordinates);
         //add bottom curve
         var bottomStart = bearing(bottom, bottomRight);
         for (var k = 1; k < spokeNum; k++) {
@@ -137,6 +135,7 @@ function lineBuffer(line, radius, units, resolution, properties) {
             var spoke = destination(bottom, radius, spokeDirection, units);
             coords.push(spoke.geometry.coordinates);
         }
+        coords.push(bottomLeft.geometry.coordinates);
         coords.push(topLeft.geometry.coordinates);
         lineBuffers.push(polygon([coords]));
     }
