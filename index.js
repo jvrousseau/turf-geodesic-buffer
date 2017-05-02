@@ -61,13 +61,15 @@ function buffer(feature, radius, units, resolution) {
         });
         return featureCollection(multi_lines);
     case 'Polygon':
-        var tmp = polygonToLineString(feature).features[0];
+        var tmp = polygonToLineString(feature)
+        tmp = (tmp.type === 'Feature') ? tmp : tmp.features[0];
         tmp.properties = properties;
         return featureCollection([union(buffer(tmp, radius, units, resolution).features[0], feature)]);
     case 'MultiPolygon':
         var multi_polys = [];
         geometry.coordinates.forEach(function (poly) {
-            var line = polygonToLineString(polygon(poly)).features[0];
+            var line = polygonToLineString(polygon(poly));
+            line = (line.type === 'Feature') ? line : line.features[0];
             line.properties = properties;
             multi_polys.push(union(buffer(line, radius, units, resolution).features[0], feature));
         });
